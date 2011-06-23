@@ -1,0 +1,33 @@
+!!! 5
+%html{ :lang => 'en' }
+  %head
+    %meta{ :charset => "utf-8" }/
+    %meta{ :name => "description", :content => "" }/
+    %meta{ :name => "author", :content => "" }/
+
+    -# Mobile viewport optimized: j.mp/bplateviewport
+    %meta{ :name => "viewport", :content => "width=device-width, initial-scale=1.0" }/
+
+    %title== #{ controller.controller_name.titleize } - #{ controller.action_name.titleize }
+
+    = csrf_meta_tags
+    = stylesheet_link_tag 'application', :media => 'all' 
+  
+  %body{ :class => "#{controller.controller_name}" }
+    #page
+      %header
+        Header
+        
+      #main{ :role => 'main' }
+        #flash
+          - flash.each do |key, value|
+            .message{ :class => key }
+              %p= value
+              
+        = yield
+      
+      %footer
+        Footer
+      
+    -# Javascript at the bottom for fast page loading
+    = javascript_include_tag 'application'

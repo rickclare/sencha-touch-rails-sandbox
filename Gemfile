@@ -11,9 +11,12 @@ gem 'unicorn'
 gem 'dalli'
 
 # Asset template engines
-gem 'sass-rails', "~> 3.1.0.rc"
 gem 'coffee-script'
 gem 'uglifier'
+gem 'haml'
+gem 'compass'
+#gem 'sass-rails', "~> 3.1.0.rc"
+#gem 'compass', :git => "https://github.com/chriseppstein/compass.git", :branch => "rails31"
 
 gem 'jquery-rails'
 
