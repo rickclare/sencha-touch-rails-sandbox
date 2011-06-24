@@ -1,9 +1,210 @@
-//<% clazz = Event
-//   clazz.attribute_names.each do |att| %>
-//  <%=clazz%>.name['<%=att%>'] = '<%=att%>';
-//<% end %>
+<% 
+  Dir.glob(Rails.root.join('app', 'models', '*.rb')).each { |file| require file }
+  ActiveRecord::Base.send(:subclasses).each do |mod|
+    
+  mod_name = "EventWibble"
+%>
+  app.models.<%= mod_name %> = new Ext.regModel('app.models.<%= mod_name %>', {
+    fields: [
+      <%= mod.columns.collect{ |att|
+            att_type = case att.type
+              when :integer then 'int'
+              when :binary then 'int'
+              when :string then 'string'
+              when :text then 'string'
+              when :boolean then 'bool'
+              when :float then 'float'
+              when :decimal then 'float'
+              when :date then 'date'
+              when :datetime then 'date'
+              when :timestamp then 'date'
+              when :time then 'date'
+              else 'auto'
+            end
+            "{ name: '#{att.name}', type: '#{att_type}' }"
+          }.join(', ') %>
+    ],
+    validations: [
+      {type: 'presence', field: 'first_name'},
+      {type: 'presence', field: 'last_name'}
+    ],
+    proxy: {
+      type: 'ajax',
+      url: '<%= mod_name.pluralize.underscore %>.json',
+      reader: {
+        type: 'json',
+        record: '<%= mod_name.underscore %>'
+      },
+      writer: {
+        type: 'json',
+        record: '<%= mod_name.underscore %>'
+      }
+    }
+  });
 
-// Dir['app/models/*.rb'].map {|f| File.basename(f, '.*').camelize.constantize }
+  app.stores.local<%= mod_name.pluralize %> = new Ext.data.Store({
+    id: 'local<%= mod_name.pluralize %>',
+    model: 'app.models.<%= mod_name %>',
+    proxy: {
+      type: 'localstorage',
+      id: '<%= mod_name.pluralize.underscore %>'
+    }
+  });
 
-// http://stackoverflow.com/questions/516579/is-there-a-way-to-get-a-collection-of-all-the-models-in-your-rails-app
+  app.stores.remote<%= mod_name.pluralize %> = new Ext.data.Store({
+    id: 'remote<%= mod_name.pluralize %>',
+    model: 'app.models.<%= mod_name %>',
+    proxy: {
+      type: 'ajax',
+      url: '<%= mod_name.pluralize.underscore %>.json',
+      reader: {
+        type: 'json',
+        root: '<%= mod_name.pluralize.underscore %>',
+        record: '<%= mod_name.underscore %>'
+      },
+      writer: {
+        type: 'json',
+        record: '<%= mod_name.underscore %>'
+      }
+    }
+  });
 
+  app.models.save<%= mod_name %> = function() {
+    var form = app.views.<%= mod_name %>New
+    var params = form.getValues();
+    var new<%= mod_name.underscore %> = Ext.ModelMgr.create(params, app.models.<%= mod_name %>);
+    var errors = new<%= mod_name.underscore %>.validate();
+    if (errors.isValid()) {
+      app.stores.local<%= mod_name.pluralize %>.add(new<%= mod_name.underscore %>);
+      app.stores.local<%= mod_name.pluralize %>.sync();
+      form.reset();
+      return true;
+    } else {
+      var errorMsg = '';
+      errors.each(function(e) {
+        errorMsg = errorMsg + fieldHumanize(e.field) + ' ' + e.message + "<br />";
+        errorMsg = errorMsg ;
+      });
+      Ext.Msg.show({
+        title: 'Error',
+        msg: errorMsg,
+        buttons: Ext.MessageBox.OK,
+        fn: function() {
+          return false;
+        }
+      });
+    }
+  }
+
+  app.models.update<%= mod_name %> = function(id) {
+    var <%= mod_name.underscore %> = app.stores.local<%= mod_name.pluralize %>.getById(id);
+    if(<%= mod_name.underscore %>) {
+      var form = app.views.<%= mod_name %>Edit
+      var params = form.getValues();
+      for(var field in params) {
+        console.log("field: " + field + ' | value: ' + params[field]);
+        <%= mod_name.underscore %>.set(field, params[field]);
+      }
+      var errors = <%= mod_name.underscore %>.validate();
+      if(errors.isValid()) {
+        <%= mod_name.underscore %>.set('synced', false);
+        app.stores.local<%= mod_name.pluralize %>.sync()
+        Ext.Msg.alert('Updated', 'The <%= mod_name %> has been updated');
+        return true;
+      } else {
+        var errorMsg = '';
+        errors.each(function(e) {
+          errorMsg = errorMsg + fieldHumanize(e.field) + ' ' + e.message + "<br />";
+          errorMsg = errorMsg ;
+        });
+        Ext.Msg.alert('Error', errorMsg);
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  app.models.destroy<%= mod_name %> = function(id) {
+    var <%= mod_name.underscore %> = app.stores.local<%= mod_name.pluralize %>.getById(id);
+    if(<%= mod_name.underscore %>) {
+      app.stores.local<%= mod_name.pluralize %>.remove(<%= mod_name.underscore %>);
+      app.stores.local<%= mod_name.pluralize %>.sync();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
+  app.models.synchronizeLocalToRemote<%= mod_name %> = function () {
+    if(!navigator.onLine) {
+      Ext.Msg.alert('Offline', 'You need to be online to sync to the web server');
+      return;
+    }
+    console.log('Start Sync');
+    var localStore = app.stores.local<%= mod_name.pluralize %>.load();
+    var syncArray = getDataToSync(localStore);
+    var count = syncArray.length;
+    if(count == 0) {
+      Ext.Msg.show({
+        title: 'Synced',
+        msg: 'All <%= mod_name.pluralize %> are synced'
+      });
+      return;
+    }
+    var syncInfo = "";
+    console.log("Number of items to sync: " + count);
+
+    // Show the syncing spinner
+    var mask = new Ext.LoadMask(Ext.getBody(), {msg: "Synchronizing"});
+    mask.show();
+
+    // Sync items to remote
+    for(var i = 0; i < count; i++) {
+      console.log("Index: " + i);
+      form = syncArray[i];
+      var syncModel = Ext.ModelMgr.create(form.data, app.models.<%= mod_name %>);
+      // Calling save on the model calls the remote proxy
+      syncModel.save({
+        success: function(result, request) {
+          var id = result.data['id']
+          console.log("Result ID: " + id);
+          console.log("Success");
+          form.set('remote_id', id);
+          form.set('synced', true);
+          localStore.sync();
+          syncInfo = 'Success: ' + form.get('first_name') + ' ' + 
+            form.get('last_name') + ' has been synced<br />';
+        },
+        failure: function(result, request) {
+          console.log("Exception");
+          console.log("Result: " + request.responseText);
+          syncInfo = 'Failed: ' + form.get('first_name') + ' ' + 
+            form.get('last_name') + ' has been synced<br />';
+        },
+        callback: function(result, request) {
+          console.log(syncInfo);
+          if(i >= count - 1) {
+            mask.hide();
+            Ext.Msg.show({
+              title: 'Complete',
+              msg: syncInfo
+            });
+          }
+        }
+      }); 
+    }
+  }
+
+  var getDataToSync = function(store) {
+    var syncArray = new Array();
+    store.each( function(form, index) {
+      var isSynced = form.get('synced');
+      if (!isSynced) {
+        syncArray.push(form);
+      }
+    });
+    return syncArray;
+  }
+<% end %>

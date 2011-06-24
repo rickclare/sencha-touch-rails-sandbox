@@ -1,4 +1,4 @@
 /*
- *= require sencha-touch/sencha-touch-debug
+ require sencha-touch/sencha-touch-debug
  *= require_tree ./mobile
 */
