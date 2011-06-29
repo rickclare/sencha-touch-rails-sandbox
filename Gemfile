@@ -1,24 +1,26 @@
 source 'http://rubygems.org'
 
 gem 'rails', '3.1.0.rc4'
-gem 'sprockets', '2.0.0.beta.10'  # locking to beta.10, as beta.11 breaks assets
 
 # Bundle edge Rails instead:
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
-gem 'pg'
-gem 'unicorn'
-gem 'dalli'
-
 # Asset template engines
 gem 'coffee-script'
 gem 'uglifier'
-gem 'haml'
-gem 'compass'
-#gem 'sass-rails', "~> 3.1.0.rc"
-#gem 'compass', :git => "https://github.com/chriseppstein/compass.git", :branch => "rails31"
 
+gem 'haml'
 gem 'jquery-rails'
+
+# gem 'compass'
+# gem 'sass-rails', "~> 3.1.0.rc"
+gem 'sass-rails', :git => 'git://github.com/rails/sass-rails.git'
+gem 'compass', :git => 'git://github.com/chriseppstein/compass.git', :branch => 'rails31'
+#gem 'oily_png'  # Improves speed of chunky_png, for faster compass sprite file generation
+
+gem 'pg'
+gem 'unicorn'
+gem 'dalli'
 
 group :production, :staging do
   gem 'therubyracer-heroku', '0.8.1.pre3'
