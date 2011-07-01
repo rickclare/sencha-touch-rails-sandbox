@@ -6,6 +6,7 @@ gem 'rails', '3.1.0.rc4'
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
 # Asset template engines
+# gem 'sass-rails', "~> 3.1.0.rc"
 gem 'coffee-script'
 gem 'uglifier'
 
@@ -13,8 +14,6 @@ gem 'haml'
 gem 'jquery-rails'
 
 # gem 'compass'
-# gem 'sass-rails', "~> 3.1.0.rc"
-gem 'sass-rails', :git => 'git://github.com/rails/sass-rails.git'
 gem 'compass', :git => 'git://github.com/chriseppstein/compass.git', :branch => 'rails31'
 #gem 'oily_png'  # Improves speed of chunky_png, for faster compass sprite file generation
 
