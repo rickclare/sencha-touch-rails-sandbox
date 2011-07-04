@@ -24,7 +24,7 @@ SenchaTouchRailsSandbox::Application.configure do
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
   
-  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  config.action_mailer.default_url_options = { host: 'localhost:3000' }
   
   # Do not compress assets
   config.assets.compress = false
@@ -33,13 +33,13 @@ SenchaTouchRailsSandbox::Application.configure do
   config.log_level = :debug
   
   Logging.init :debug, :info, :warn, :error, :fatal
-  layout = Logging::Layouts::Pattern.new(:pattern => "%.1l, [%d #rails] %5l -- : %m\n", :date_pattern => '%Y-%m-%dT%H:%M:%S.%6N')
+  layout = Logging::Layouts::Pattern.new(pattern: "%.1l, [%d #rails] %5l -- : %m\n", date_pattern: '%Y-%m-%dT%H:%M:%S.%6N')
   
   config.logger = Logging::Logger['server'].tap do |l|
-    l.add_appenders Logging::Appenders::Stdout.new(:layout => layout)
+    l.add_appenders Logging::Appenders::Stdout.new(layout: layout)
     l.add_appenders Logging::Appenders::File.new('default',
-                        :filename => Rails.root.join('log', Rails.env+'.log').to_s, 
-                        :layout => layout)
+                        filename: Rails.root.join('log', Rails.env+'.log').to_s, 
+                        layout: layout)
   end
   
 end
