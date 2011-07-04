@@ -55,6 +55,6 @@ module SenchaTouchRailsSandbox
     # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
     # These can be precompiled by using commands such as:
     #   bundle exec rake assets:precompile
-    config.assets.precompile += %w( head.js )
+    config.assets.precompile += %w( mobile.js mobile-debug.js mobile.css )
   end
 end

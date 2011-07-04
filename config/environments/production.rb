@@ -24,9 +24,9 @@ SenchaTouchRailsSandbox::Application.configure do
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
-
-  # See everything in the log (default is :info)
-  # config.log_level = :debug
+  
+  # See only warn/fatal in the production log (default is :info)
+  config.log_level = :warn
 
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new
