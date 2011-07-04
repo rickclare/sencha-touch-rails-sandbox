@@ -2,5 +2,5 @@ Ext.regApplication {
   name: 'App',
   defaultUrl: 'welcome',
   launch: ->
-    @viewport = new App.views.Viewport;
+    @viewport = new App.views.Viewport
 }
