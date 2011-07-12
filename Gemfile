@@ -9,17 +9,16 @@ gem 'rails', '3.1.0.rc4'
 gem 'sass-rails', "~> 3.1.0.rc"
 gem 'coffee-script'
 gem 'uglifier'
-
 gem 'haml'
 gem 'jquery-rails'
+gem 'pg'
+gem 'unicorn'
+gem 'dalli'
+gem 'rack-offline', git: 'git://github.com/rickclare/rack-offline' # using fork until master works with Ruby 1.9 and Rails 3.1 assets
 
 # gem 'compass'
 gem 'compass', git: 'git://github.com/chriseppstein/compass.git', branch: 'rails31'
 #gem 'oily_png'  # Improves speed of chunky_png, for faster compass sprite file generation
-
-gem 'pg'
-gem 'unicorn'
-gem 'dalli'
 
 group :production, :staging do
   gem 'therubyracer-heroku', '0.8.1.pre3'

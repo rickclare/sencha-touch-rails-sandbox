@@ -14,6 +14,10 @@ SenchaTouchRailsSandbox::Application.configure do
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
+  
+  ## Specify the default JavaScript compressor 
+  ## Uncomment the following line, if you need to set [perform_caching = true] and having problems with serving js files
+  #config.assets.js_compressor  = :uglifier
 
   # Raise errors, if the mailer can't send
   config.action_mailer.raise_delivery_errors = true
